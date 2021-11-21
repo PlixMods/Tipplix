@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using Reactor;
+using Tipplix.Enums;
 using Tipplix.Extensions;
 using UnityEngine;
 
@@ -13,8 +15,8 @@ public static class Patches
         [HarmonyPatch(nameof(RoleBehaviour.TeamColor), MethodType.Getter)]
         private static bool TeamColorPrefix(RoleBehaviour __instance, ref Color __result)
         {
-            var role = (BaseRole) __instance;
-            if (role is null) return true;
+            var role = __instance.GetCustomRole();
+            if (role is null or { Team: not RoleTeam.Alone }) return true;
 
             __result = role.Color;
             return false;

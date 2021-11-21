@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Tipplix.Utility;
 public static class SpriteHelper
 {
-    public static Sprite CreateSprite(string image, float pixelsPerUnit = 128f)
+    public static Sprite? CreateSprite(string image, float pixelsPerUnit = 128f)
     {
         try
         {

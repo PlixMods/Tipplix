@@ -20,13 +20,13 @@ public abstract partial class BaseRole
     public abstract bool CanVent { get; }
     public abstract bool TasksCountTowardProgress { get; }
         
-    public virtual Sprite GetSprite { get; set; }
-    public Sprite Sprite => _sprite ? _sprite : _sprite = GetSprite;
-    private Sprite _sprite;
+    public virtual Sprite? GetSprite { get; set; }
+    public Sprite? Sprite => _sprite ? _sprite : _sprite = GetSprite;
+    private Sprite? _sprite;
 
-    public RoleBehaviour Behaviour { get; set; }
+    public RoleBehaviour? Behaviour { get; set; }
     public RoleTypes RoleType { get; private set; }
-    public CustomRoleOptions RoleOptions { get; set; }
+    public CustomRoleOptions? RoleOptions { get; set; }
 
     public void Initialize()
     {

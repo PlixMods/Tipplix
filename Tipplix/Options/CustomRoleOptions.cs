@@ -17,10 +17,10 @@ public class CustomRoleOptions
     private static List<CustomRoleOptions> _roleOptions { get; } = new();
     public static IReadOnlyList<CustomRoleOptions> RoleOptions => _roleOptions.AsReadOnly();
         
-    public RoleOptionSetting RoleSetting { get; set; }
+    public RoleOptionSetting? RoleSetting { get; set; }
         
-    public RoleBehaviour Role { get; }
-    public AdvancedRoleSettingsButton Tab { get; set; }
+    public RoleBehaviour? Role { get; }
+    public AdvancedRoleSettingsButton? Tab { get; set; }
 
     public CustomRoleOptions(RoleBehaviour role)
     {
@@ -29,29 +29,29 @@ public class CustomRoleOptions
 
     public static CustomRoleOptions Register(RoleBehaviour role)
     {
-        var rO = new CustomRoleOptions(role);
-        _roleOptions.Add(rO);
-        return rO;
+        var roleOptions = new CustomRoleOptions(role);
+        _roleOptions.Add(roleOptions);
+        return roleOptions;
     }
         
-    public bool InitializeChance(RoleOptionSetting prefab)
+    public bool InitializeChance(RoleOptionSetting? prefab)
     {
         if (RoleSetting) return true;
             
-        RoleSetting = Object.Instantiate(prefab, prefab.transform.parent);
-        RoleSetting.Role = Role;
-        RoleSetting.name = Role.NiceName;
+        RoleSetting = Object.Instantiate(prefab, prefab!.transform.parent);
+        RoleSetting!.Role = Role;
+        RoleSetting.name = Role!.NiceName;
 
         return false;
     }
         
-    public AdvancedRoleSettingsButton InitializeAdvancedTab(AdvancedRoleSettingsButton prefab)
+    public AdvancedRoleSettingsButton InitializeAdvancedTab(AdvancedRoleSettingsButton? prefab)
     {
         if (Tab != null && Tab.Tab) return Tab;
 
         Tab = new AdvancedRoleSettingsButton {
-            Tab = Object.Instantiate(prefab.Tab, prefab.Tab.transform.parent),
-            Type = Role.Role
+            Tab = Object.Instantiate(prefab!.Tab, prefab.Tab.transform.parent),
+            Type = Role!.Role
         };
 
         Tab.Tab.name = $"{Role.NiceName} Settings";
@@ -70,8 +70,8 @@ public class CustomRoleOptions
     [HarmonyPatch]
     public static class Patches
     {
-        private static RoleOptionSetting RoleOptionsPrefab;
-        private static AdvancedRoleSettingsButton ButtonPrefab;
+        private static RoleOptionSetting? _roleOptionsPrefab;
+        private static AdvancedRoleSettingsButton? _buttonPrefab;
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.OnEnable))]
@@ -80,10 +80,10 @@ public class CustomRoleOptions
             if (!RoleOptions.Any()) return;
             TrySetPrefab(__instance);
                 
-            foreach (var option in RoleOptions.Where(_ => !_.InitializeChance(RoleOptionsPrefab))) 
+            foreach (var option in RoleOptions.Where(_ => !_.InitializeChance(_roleOptionsPrefab))) 
             {
                 __instance.AllRoleSettings.Add(option.RoleSetting);
-                __instance.AllAdvancedSettingTabs.Add(option.InitializeAdvancedTab(ButtonPrefab));
+                __instance.AllAdvancedSettingTabs.Add(option.InitializeAdvancedTab(_buttonPrefab));
             }
         }
 
@@ -102,9 +102,9 @@ public class CustomRoleOptions
 
         public static void TrySetPrefab(RolesSettingsMenu menu)
         {
-            if (!RoleOptionsPrefab) RoleOptionsPrefab = Object.FindObjectOfType<RoleOptionSetting>();
-            if (ButtonPrefab is null || !ButtonPrefab.Tab) 
-                ButtonPrefab = menu.AllAdvancedSettingTabs.ToArray().First();
+            if (!_roleOptionsPrefab) _roleOptionsPrefab = Object.FindObjectOfType<RoleOptionSetting>();
+            if (_buttonPrefab is null || !_buttonPrefab.Tab) 
+                _buttonPrefab = menu.AllAdvancedSettingTabs.ToArray().First();
         }
     }
 }

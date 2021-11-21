@@ -20,7 +20,7 @@ public sealed class Jester : BaseRole
     public override bool CanUseKillButton => false;
     public override bool CanVent => false;
     public override bool TasksCountTowardProgress => true;
-    public override Sprite GetSprite => SpriteHelper.CreateSprite("Tipplix.Resources.jester.png", 190f);
+    public override Sprite? GetSprite => SpriteHelper.CreateSprite("Tipplix.Resources.jester.png", 190f);
 
     [HarmonyPatch]
     public static class Patches

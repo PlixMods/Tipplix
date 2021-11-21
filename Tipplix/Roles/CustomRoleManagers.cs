@@ -14,7 +14,7 @@ public static class CustomRoleManagers
     public static void Register(BaseRole role)
     {
         _allCustomRoles.Add(role);
-        RoleSingleton<BaseRole>.Register(role);
+        //RoleSingleton<BaseRole>.Register(role);
     }
 
     public static void LoadRoles()
@@ -23,14 +23,13 @@ public static class CustomRoleManagers
         RoleManager.Instance.AllRoles = RoleManager.Instance.AllRoles.Concat(_allCustomRoles.Select(_ => _.Behaviour)).ToArray();
     }
 
-    public static BaseRole GetOrDefault(RoleBehaviour roleBehaviour)
+    public static BaseRole? GetOrDefault(RoleBehaviour roleBehaviour)
     {
         return GetOrDefault(roleBehaviour.Role);
     }
         
-    public static BaseRole GetOrDefault(RoleTypes roleType)
+    public static BaseRole? GetOrDefault(RoleTypes roleType)
     {
-        var pos = _allCustomRoles.FindIndex(x => x.RoleType == roleType);
-        return pos != -1? _allCustomRoles[pos] : null;
+        return _allCustomRoles.FirstOrDefault(x => x.RoleType == roleType);
     }
 }

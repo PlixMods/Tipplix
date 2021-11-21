@@ -18,8 +18,13 @@ public static class BaseRoleExtensions
     {
         return GetCustomRole(playerInfo.Role) is T;
     }
-        
-    public static BaseRole GetCustomRole(this RoleBehaviour roleBehaviour)
+    
+    public static BaseRole? GetCustomRole(this PlayerControl player)
+    {
+        return CustomRoleManagers.GetOrDefault(player.Data.Role);
+    }
+    
+    public static BaseRole? GetCustomRole(this RoleBehaviour roleBehaviour)
     {
         return CustomRoleManagers.GetOrDefault(roleBehaviour);
     }

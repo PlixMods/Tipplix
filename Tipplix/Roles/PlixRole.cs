@@ -3,12 +3,12 @@ using Reactor;
 
 namespace Tipplix.Roles;
 
-[RegisterInIl2Cpp]
-public class PlixRole : RoleBehaviour
+//[RegisterInIl2Cpp]
+public sealed class PlixRole : RoleBehaviour
 {
     public PlixRole(IntPtr ptr) : base(ptr) { }
 
-    public virtual void Initialize(PlayerControl player)
+    public override void Initialize(PlayerControl player)
     {
         
     }
