@@ -1,9 +1,8 @@
-﻿namespace Tipplix.Enums
+﻿namespace Tipplix.Enums;
+
+public enum RoleTeam
 {
-    public enum RoleTeam
-    {
-        Crewmate,
-        Impostor,
-        Alone
-    }
+    Crewmate,
+    Impostor,
+    Alone
 }

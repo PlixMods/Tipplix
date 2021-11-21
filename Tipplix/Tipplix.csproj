@@ -8,6 +8,7 @@
         <VersionSuffix>dev</VersionSuffix> 
         <Description>An Among Us role API</Description>
         <Authors>amsyarasyiq</Authors>
+        <Nullable>true</Nullable>
     </PropertyGroup>
 
     <PropertyGroup>
