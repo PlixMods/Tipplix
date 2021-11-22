@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.IL2CPP;
+using BepInEx.Logging;
 using HarmonyLib;
 using InnerNet;
 using Reactor;
@@ -21,6 +22,7 @@ namespace Tipplix;
 public partial class TipplixPlugin : BasePlugin
 {
     public static TipplixPlugin Instance => PluginSingleton<TipplixPlugin>.Instance;
+    public static ManualLogSource Logger => Logger<TipplixPlugin>.Instance;
     private Harmony Harmony { get; } = new(Id);
 
     public override void Load()
@@ -31,8 +33,6 @@ public partial class TipplixPlugin : BasePlugin
         RegisterCustomRolesAttribute.Register(Assembly.GetExecutingAssembly());
         
         Harmony.PatchAll();
-        
-        Harmony.CreateAndPatchAll(typeof(DebugManager));
     }
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
@@ -60,6 +60,7 @@ public partial class TipplixPlugin : BasePlugin
         }
     }
     
+    [HarmonyPatch]
     public static class DebugManager
     {
         private static readonly Random Random = new((int) DateTime.Now.Ticks);
@@ -86,13 +87,15 @@ public partial class TipplixPlugin : BasePlugin
                 playerControl.SetColor((byte) Random.Next(Palette.PlayerColors.Length));
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, Array.Empty<byte>());
             }
-        }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SetRole))]
-        public static void oosspo(PlayerControl targetPlayer, out RoleTypes roleType)
-        {
-            roleType = targetPlayer.PlayerId == 2? RoleTypes.Impostor : (RoleTypes) 6;
+            if (Input.GetKeyDown(KeyCode.F4))
+            {
+                //PlayerControl.AllPlayerControls.ToArray().ToList().ForEach(p =>
+                //{
+                //    p.nameText.text = p.Data.PlayerName + "\n" + p.Data.Role.NiceName;
+                //    p.nameText.color = p.Data.Role.TeamColor;
+                //});
+            }
         }
     }
 }

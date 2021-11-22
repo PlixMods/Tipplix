@@ -19,6 +19,7 @@ public abstract partial class BaseRole
     public abstract bool CanUseKillButton { get; }
     public abstract bool CanVent { get; }
     public abstract bool TasksCountTowardProgress { get; }
+    public abstract int MaxPlayer { get; }
         
     public virtual Sprite? GetSprite { get; set; }
     public Sprite? Sprite => _sprite ? _sprite : _sprite = GetSprite;
@@ -50,6 +51,7 @@ public abstract partial class BaseRole
         Behaviour.CanUseKillButton = CanUseKillButton;
         Behaviour.CanVent = CanVent;
         Behaviour.TasksCountTowardProgress = TasksCountTowardProgress;
+        Behaviour.MaxCount = MaxPlayer;
 
         return Behaviour;
     }
