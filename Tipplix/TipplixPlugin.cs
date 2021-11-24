@@ -30,7 +30,8 @@ public partial class TipplixPlugin : BasePlugin
         RegisterCustomRolesAttribute.Initialize();
         
         // TODO: remove this when done messing up stuff
-        RegisterCustomRolesAttribute.Register(Assembly.GetExecutingAssembly());
+        RegisterCustomRolesAttribute.Register(typeof(Jester));
+        RegisterCustomRolesAttribute.Register(typeof(Sheriff));
         
         Harmony.PatchAll();
     }
@@ -47,16 +48,12 @@ public partial class TipplixPlugin : BasePlugin
             
             CustomRoleManagers.LoadRoles();
             
-            Logger<TipplixPlugin>.Debug("Roles list: " + RoleManager.Instance.AllRoles.Select(x => x.NiceName).Aggregate((x,y) => x + ", " + y));
-            
             _initialized = true;
         }
 
-        public static bool CheckRolesExistance()
+        private static bool CheckRolesExistance()
         {
-            if (!RoleManager.Instance || !(RoleManager.Instance.AllRoles?.Any() ?? false)) return false;
-            Logger<TipplixPlugin>.Debug("Roles indeed added/available on MainMenuManager.Start()..");
-            return true;
+            return RoleManager.Instance && (RoleManager.Instance.AllRoles?.Any() ?? false);
         }
     }
     
@@ -69,32 +66,35 @@ public partial class TipplixPlugin : BasePlugin
         [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
         public static void KJU()
         {
-            if (!AmongUsClient.Instance.AmHost) return;
-
             // Spawn dummys
-            if (Input.GetKeyDown(KeyCode.F3))
+            if (Input.GetKeyDown(KeyCode.F3) && AmongUsClient.Instance.AmHost)
             {
-                var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
-                _ = playerControl.PlayerId = (byte) GameData.Instance.GetAvailableId();
+                var dummy = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
+                dummy.PlayerId = (byte) GameData.Instance.GetAvailableId();
 
-                GameData.Instance.AddPlayer(playerControl);
-                AmongUsClient.Instance.Spawn(playerControl);
+                GameData.Instance.AddPlayer(dummy);
+                AmongUsClient.Instance.Spawn(dummy);
 
-                playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
-                playerControl.GetComponent<DummyBehaviour>().enabled = true;
-                playerControl.NetTransform.enabled = false;
-                playerControl.SetName("SideDummy " + playerControl.Data.PlayerId);
-                playerControl.SetColor((byte) Random.Next(Palette.PlayerColors.Length));
-                GameData.Instance.RpcSetTasks(playerControl.PlayerId, Array.Empty<byte>());
+                dummy.transform.position = PlayerControl.LocalPlayer.transform.position;
+                dummy.GetComponent<DummyBehaviour>().enabled = true;
+                dummy.NetTransform.enabled = false;
+                dummy.SetName("SideDummy " + dummy.Data.PlayerId);
+                dummy.SetColor((byte) Random.Next(Palette.PlayerColors.Length));
+                GameData.Instance.RpcSetTasks(dummy.PlayerId, Array.Empty<byte>());
             }
 
             if (Input.GetKeyDown(KeyCode.F4))
             {
-                //PlayerControl.AllPlayerControls.ToArray().ToList().ForEach(p =>
-                //{
-                //    p.nameText.text = p.Data.PlayerName + "\n" + p.Data.Role.NiceName;
-                //    p.nameText.color = p.Data.Role.TeamColor;
-                //});
+                PlayerControl.AllPlayerControls.ToArray().ToList().ForEach(p =>
+                {
+                    p.nameText.text = p.Data.PlayerName + "\n" + p.Data.Role.NiceName + "\n ";
+                    p.nameText.color = p.Data.Role.TeamColor;
+                });
+            }
+
+            if (Input.GetKeyDown(KeyCode.F5))
+            {
+                Logger<TipplixPlugin>.Debug("Jester can call meeting:" + (bool) Jester.Settings.CanCallMeeting);
             }
         }
     }

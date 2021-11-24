@@ -2,6 +2,7 @@
 using Tipplix.Attributes;
 using Tipplix.Enums;
 using Tipplix.Extensions;
+using Tipplix.Options;
 using Tipplix.Roles;
 using Tipplix.Utility;
 using UnityEngine;
@@ -21,8 +22,21 @@ public sealed class Jester : BaseRole
     public override bool CanVent => false;
     public override bool TasksCountTowardProgress => true;
     public override int MaxPlayer => 1;
-    public override Sprite? GetSprite => SpriteHelper.CreateSprite("Tipplix.Resources.jester.png", 190f);
+    public override bool OptionVisible => true;
+    public override ExileReveal RevealOnExile => ExileReveal.Default;
+    public override int? KillDistance => null;
+    public override bool CanTarget(PlayerControl target) => false;
+    
+    public override Sprite? GetSprite => SpriteHelper.FindOrNull("jester.png");
+    public override CustomOption[] Options => new CustomOption[] {
+        Settings.CanCallMeeting
+    };
 
+    public static class Settings
+    {
+        public static readonly CustomToggleOption CanCallMeeting = new("Can Call Emergency Meeting");
+    }
+    
     [HarmonyPatch]
     public static class Patches
     {

@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using HarmonyLib;
 using Tipplix.Enums;
-using Tipplix.Extensions;
 using UnityEngine;
 using I = Il2CppSystem.Collections.Generic;
 
-namespace Tipplix.Intro;
+namespace Tipplix.Patches;
 
 [HarmonyPatch(typeof(IntroCutscene))]
 public static class Patches
@@ -35,12 +34,10 @@ public static class Patches
         __instance.ImpostorText.SetText(localRoleData.Blurb);
         __instance.ImpostorText.color = localRoleData.TeamColor;
         __instance.BackgroundBar.material.SetColor(Color, localRoleData.TeamColor);
-        
-        TipplixPlugin.Logger.LogDebug(PlayerControl.AllPlayerControls.ToArray().Select(x => x.Data.Role.NiceName).Aggregate((x, y) => x + ", " + y));
     }
 
-    [HarmonyPrefix] [HarmonyPostfix]
+    [HarmonyPrefix]
     [HarmonyPatch(nameof(IntroCutscene.SetUpRoleText))]
-    public static void SetUpRoleTextBoth(IntroCutscene __instance)
+    public static void SetUpRoleTextPrefix(IntroCutscene __instance)
     { } // Patching here because the game crashes if I don't?
 }

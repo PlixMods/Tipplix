@@ -12,26 +12,37 @@ public abstract partial class BaseRole
 {
     public abstract string Name { get; }
     public abstract string Description { get; }
-    public abstract string LongDescription { get; }
-    public abstract string MedDescription { get; }
+    public virtual string MedDescription => Description;
+    public virtual string LongDescription => Description;
     public abstract Color Color { get; }
     public abstract RoleTeam Team { get; }
     public abstract bool CanUseKillButton { get; }
     public abstract bool CanVent { get; }
     public abstract bool TasksCountTowardProgress { get; }
     public abstract int MaxPlayer { get; }
-        
+    public abstract bool OptionVisible { get; }
+    public abstract ExileReveal RevealOnExile { get; }
+    public abstract int? KillDistance { get; }
+    public abstract bool CanTarget(PlayerControl target);
+
+    public virtual CustomOption[]? Options => null;
     public virtual Sprite? GetSprite { get; set; }
     public Sprite? Sprite => _sprite ? _sprite : _sprite = GetSprite;
     private Sprite? _sprite;
 
     public RoleBehaviour? Behaviour { get; set; }
     public RoleTypes RoleType { get; private set; }
-    public CustomRoleOptions? RoleOptions { get; set; }
+    public CustomRoleOption? RoleOptions { get; set; }
 
     public void Initialize()
     {
-        RoleOptions = CustomRoleOptions.Register(Behaviour = CreateInstance());
+        Behaviour = CreateInstance();
+
+        if (OptionVisible)
+        {
+            var roleOption = new CustomRoleOption(Behaviour, Options);
+            RoleOptions = OptionsManager.RegisterRoleOption(roleOption);
+        }
     }
 
     public RoleBehaviour CreateInstance()

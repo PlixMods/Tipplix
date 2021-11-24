@@ -1,4 +1,5 @@
-﻿using Tipplix.Roles;
+﻿using Tipplix.Enums;
+using Tipplix.Roles;
 
 namespace Tipplix.Extensions;
 
@@ -17,6 +18,11 @@ public static class BaseRoleExtensions
     public static bool Is<T>(this GameData.PlayerInfo playerInfo) where T : BaseRole
     {
         return GetCustomRole(playerInfo.Role) is T;
+    }
+    
+    public static bool Is(this GameData.PlayerInfo playerInfo, RoleTeam team)
+    {
+        return playerInfo.Role.TeamType == (RoleTeamTypes) team;
     }
     
     public static BaseRole? GetCustomRole(this PlayerControl player)

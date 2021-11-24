@@ -7,6 +7,7 @@ using Reactor;
 using Reactor.Networking;
 using Tipplix.Enums;
 using Tipplix.Extensions;
+using Tipplix.Linq;
 using UnityEngine;
 using static RoleManager;
 
@@ -22,7 +23,7 @@ public static class Patches
 		private static bool TeamColorPrefix(RoleBehaviour __instance, ref Color __result)
 		{
 			var role = __instance.GetCustomRole();
-			if (role is null or {Team: not RoleTeam.Alone}) return true;
+			if (role is null) return true;
 
 			__result = role.Color;
 			return false;
@@ -37,6 +38,7 @@ public static class Patches
 		private static void TeamColorPrefix(TaskAddButton __instance, RoleBehaviour value)
 		{
 			if (!value.IsCustom()) return;
+			
 			__instance.FileImage.color = value.TeamColor;
 			__instance.RolloverHandler.OutColor = value.TeamColor;
 		}
@@ -55,7 +57,7 @@ public static class Patches
 			var toAssign = allAloneRoles
 				.Select(role => role.Role)
 				.Where(role => roleOptions.GetChancePerGame(role) == 100 || HashRandom.Next(101) < roleOptions.GetChancePerGame(role))
-				.ToList();
+				.Shuffle().ToList();
 
 			foreach (var role in toAssign)
 			{
@@ -63,17 +65,17 @@ public static class Patches
 					toAssign.Add(role);
 			}
 
+			allCrews = allCrews.Shuffle().ToList();
+			toAssign = toAssign.Shuffle().ToList();
+
 			while (true)
 			{
 				if (!toAssign.Any()) break;
 				var randomRole = toAssign[HashRandom.Next(toAssign.Count)];
 				var randomPlayer = allCrews[HashRandom.Next(allCrews.Count)];
-
-				randomPlayer.Object.roleAssigned = false; // spent hours to debug this wtf
-				randomPlayer.Object.RpcSetRole(randomRole);
-
-				allCrews.RemoveAll(x => x.PlayerId == randomPlayer.PlayerId);
-				toAssign.RemoveAll(x => x == randomRole);
+				
+				if (allCrews.Remove(randomPlayer) && toAssign.Remove(randomRole))
+					randomPlayer.Object.RpcSetRole(randomRole);
 			}
 		}
 	}
