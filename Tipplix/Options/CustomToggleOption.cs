@@ -1,7 +1,6 @@
 ﻿using System;
 using Prefabs = Tipplix.Options.OptionsManager.Prefabs;
 using Il2CppSystem.IO;
-using Reactor;
 using Object = UnityEngine.Object;
 
 namespace Tipplix.Options;

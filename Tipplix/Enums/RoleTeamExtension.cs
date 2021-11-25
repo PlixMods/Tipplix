@@ -1,6 +1,6 @@
 ﻿namespace Tipplix.Enums;
 
-public enum RoleTeam
+public enum RoleTeamExtension
 {
     Crewmate,
     Impostor,

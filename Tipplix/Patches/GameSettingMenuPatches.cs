@@ -1,13 +1,10 @@
 ﻿using System.Linq;
 using HarmonyLib;
-using Il2CppSystem;
 using Il2CppSystem.Collections.Generic;
 using Reactor;
 using Reactor.Extensions;
 using Tipplix.Enums;
-using Tipplix.Extensions;
 using Tipplix.Options;
-using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
 using Object = UnityEngine.Object;
 
 namespace Tipplix.Patches;

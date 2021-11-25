@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Tipplix.Enums;
 using UnityEngine;
 using I = Il2CppSystem.Collections.Generic;
@@ -16,7 +15,7 @@ public static class Patches
     public static void BeginCrewmatePrefix(ref I.List<PlayerControl> yourTeam)
     {
         if (!PlayerControl.LocalPlayer.Data.Role) return;
-        if (PlayerControl.LocalPlayer.Data!.Role.TeamType != (RoleTeamTypes) RoleTeam.Alone) return;
+        if (PlayerControl.LocalPlayer.Data!.Role.TeamType != (RoleTeamTypes) RoleTeamExtension.Alone) return;
         
         yourTeam.Clear();
         yourTeam.Add(PlayerControl.LocalPlayer);
@@ -27,7 +26,7 @@ public static class Patches
     public static void BeginCrewmatePostfix(IntroCutscene __instance)
     {
         var localRoleData = PlayerControl.LocalPlayer!.Data!.Role;
-        if (localRoleData!.TeamType != (RoleTeamTypes) RoleTeam.Alone) return;
+        if (localRoleData!.TeamType != (RoleTeamTypes) RoleTeamExtension.Alone) return;
         
         __instance.TeamTitle.SetText(localRoleData.NiceName);
         __instance.TeamTitle.color = localRoleData.TeamColor;

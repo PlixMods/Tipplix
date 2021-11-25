@@ -12,13 +12,13 @@ public class RegisterCustomRolesAttribute : Attribute
 {
     public static void Register(Type roleType)
     {
-        if (!roleType.IsSubclassOf(typeof(BaseRole)))
+        if (!roleType.IsSubclassOf(typeof(RoleExtension)))
         {
             throw new InvalidOperationException($"Type {roleType.FullDescription()} has {nameof(RegisterCustomRolesAttribute)} but doesn't extend {nameof(BasePlugin)}.");
         }
 
-        var newRole = (BaseRole) Activator.CreateInstance(roleType);
-        CustomRoleManagers.Register(newRole);
+        var newRole = (RoleExtension) Activator.CreateInstance(roleType);
+        RoleExtensionManager.Register(newRole);
     }
     
     public static void Register(Assembly assembly)

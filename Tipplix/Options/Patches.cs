@@ -2,7 +2,6 @@
 using Il2CppSystem.IO;
 using System.Linq;
 using HarmonyLib;
-using Reactor;
 using Tipplix.Extensions;
 
 namespace Tipplix.Options;
@@ -58,11 +57,11 @@ public static class Patches
     [HarmonyPatch(typeof(RoleOptionSetting), nameof(RoleOptionSetting.ShowRoleDetails))]
     public static bool RoleOptionSetting_ShowRoleDetailsPrefix(RoleOptionSetting __instance)
     {
-        if (!__instance.Role.IsCustom()) return true;
+        if (!__instance.Role.HasExtension()) return true;
                 
         GameSettingMenu.Instance.RoleName.text = __instance.Role.NiceName;
         GameSettingMenu.Instance.RoleBlurb.text = __instance.Role.BlurbLong;
-        GameSettingMenu.Instance.RoleIcon.sprite = __instance.Role.GetCustomRole()?.Sprite;
+        GameSettingMenu.Instance.RoleIcon.sprite = __instance.Role.GetExtensionOrDefault()?.Sprite;
                 
         return false;
     }

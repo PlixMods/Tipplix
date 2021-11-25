@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HarmonyLib;
-using Reactor;
+﻿using System.Linq;
 using Reactor.Extensions;
-using Tipplix.Extensions;
-using Tipplix.Utility;
-using TMPro;
 using UnityEngine;
 using Prefabs = Tipplix.Options.OptionsManager.Prefabs;
 using Object = UnityEngine.Object;

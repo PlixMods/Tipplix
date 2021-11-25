@@ -1,17 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using BepInEx;
 using BepInEx.IL2CPP;
 using BepInEx.Logging;
 using HarmonyLib;
-using InnerNet;
 using Reactor;
 using Tipplix.Attributes;
+using Tipplix.CustomGameOver;
 using Tipplix.Roles;
 using Tipplix.TestRole;
 using UnityEngine;
-using Object = System.Object;
 using Random = System.Random;
 
 namespace Tipplix;
@@ -28,10 +27,12 @@ public partial class TipplixPlugin : BasePlugin
     public override void Load()
     {
         RegisterCustomRolesAttribute.Initialize();
+        RegisterCustomEndGameAttribute.Initialize();
         
         // TODO: remove this when done messing up stuff
         RegisterCustomRolesAttribute.Register(typeof(Jester));
         RegisterCustomRolesAttribute.Register(typeof(Sheriff));
+        RegisterCustomEndGameAttribute.Register(typeof(Jester.EndGame));
         
         Harmony.PatchAll();
     }
@@ -46,7 +47,7 @@ public partial class TipplixPlugin : BasePlugin
             if (_initialized) return;
             if (!CheckRolesExistance()) return;
             
-            CustomRoleManagers.LoadRoles();
+            RoleExtensionManager.LoadRoles();
             
             _initialized = true;
         }
@@ -91,10 +92,13 @@ public partial class TipplixPlugin : BasePlugin
                     p.nameText.color = p.Data.Role.TeamColor;
                 });
             }
-
+            
             if (Input.GetKeyDown(KeyCode.F5))
             {
-                Logger<TipplixPlugin>.Debug("Jester can call meeting:" + (bool) Jester.Settings.CanCallMeeting);
+                CustomGameOverManager.RpcEndGame<Jester.EndGame>(PlayerControl.AllPlayerControls
+                    .ToArray()
+                    .Select(x => x.Data)
+                    .ToList());
             }
         }
     }

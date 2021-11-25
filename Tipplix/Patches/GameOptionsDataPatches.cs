@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
 using HarmonyLib;
-using Reactor;
-using Tipplix.Extensions;
 using Tipplix.Options;
 using UnityEngine;
 

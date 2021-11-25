@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using HarmonyLib;
 using I = Il2CppSystem.Collections.Generic;
-using Reactor;
-using Reactor.Networking;
-using Tipplix.Enums;
 using Tipplix.Extensions;
 using Tipplix.Linq;
 using UnityEngine;
@@ -22,7 +17,7 @@ public static class Patches
 		[HarmonyPatch(nameof(RoleBehaviour.TeamColor), MethodType.Getter)]
 		private static bool TeamColorPrefix(RoleBehaviour __instance, ref Color __result)
 		{
-			var role = __instance.GetCustomRole();
+			var role = __instance.GetExtensionOrDefault();
 			if (role is null) return true;
 
 			__result = role.Color;
@@ -37,7 +32,7 @@ public static class Patches
 		[HarmonyPatch(nameof(TaskAddButton.Role), MethodType.Setter)]
 		private static void TeamColorPrefix(TaskAddButton __instance, RoleBehaviour value)
 		{
-			if (!value.IsCustom()) return;
+			if (!value.HasExtension()) return;
 			
 			__instance.FileImage.color = value.TeamColor;
 			__instance.RolloverHandler.OutColor = value.TeamColor;

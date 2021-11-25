@@ -1,38 +1,63 @@
-﻿using System;
-using System.Linq;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Tipplix.Enums;
 using Tipplix.Extensions;
+using Tipplix.Options;
+using UnhollowerBaseLib;
 
 namespace Tipplix.Patches;
 
-[HarmonyPatch(typeof(ExileController))]
+[HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames), typeof(Il2CppReferenceArray<Il2CppSystem.Object>))]
 public static class ExileControllerPatches
 {
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(ExileController.Begin))]
-    public static void BeginPostfix(ExileController __instance)
+    [HarmonyPrefix]
+    public static bool Prefix(StringNames id, ref string __result)
     {
-        var role = __instance.exiled?.Role.GetCustomRole();
-        if (role is null) return;
+        var controller = ExileController.Instance;
         
-        var revealRole = role.RevealOnExile;
-        switch (revealRole)
+        // Reveal custom role
+        if (controller && id is StringNames.ExileTextPN or StringNames.ExileTextSN or StringNames.ExileTextPP or StringNames.ExileTextSP)
         {
-            case ExileReveal.Never:
-            case ExileReveal.Default when !PlayerControl.GameOptions.ConfirmImpostor: return;
-            case ExileReveal.Always: break;
-            default: throw new ArgumentOutOfRangeException();
+            var role = controller.exiled?.Role.GetExtensionOrDefault();
+            if (role is null) return true;
+
+            var playerName = controller.exiled!.PlayerName.Trim();
+            var revealRole = role.RevealOnExile ?? PlixOptions.ExileRevealType;
+            var roleString = revealRole switch {
+                RevealTypes.None => "was ejected",
+                RevealTypes.Team => GetTeamString(role.TeamExtension),
+                RevealTypes.Role => GetRoleString(role.Name),
+                _ => "was unknown"
+            };
+
+            __result = $"{playerName} {roleString}.";
+            return false;
         }
         
-        __instance.completeString = $"{__instance.exiled!.PlayerName.TrimEnd()} was {GetRoleName(role.Name)}.";
+        // Never reveal how many impostor left
+        if (controller && id is StringNames.ImpostorsRemainP or StringNames.ImpostorsRemainS)
+        {
+            __result = string.Empty;
+            return false;
+        }
+
+        return true;
     }
 
-    private static string GetRoleName(string roleName)
+    private static string GetTeamString(RoleTeamExtension teamExtensionTypes)
+    {
+        return teamExtensionTypes switch {
+            RoleTeamExtension.Crewmate => "was a crewmate",
+            RoleTeamExtension.Impostor => "was an impostor",
+            RoleTeamExtension.Alone => "was a neutral",
+            _ => "role is unknown (invalid)"
+        };
+    }
+
+    private static string GetRoleString(string roleName)
     {
         var lower = roleName.ToLower().Trim();
         var needThe = lower.StartsWith("the");
 
-        return $"{(needThe? "The " : "")}{roleName}".Trim();
+        return $"was {(needThe? "The " : "")}{roleName}".Trim();
     }
 }
