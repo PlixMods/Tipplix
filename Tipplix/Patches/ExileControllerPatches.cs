@@ -12,10 +12,10 @@ public static class ExileControllerPatches
     [HarmonyPrefix]
     public static bool Prefix(StringNames id, ref string __result)
     {
-        var controller = ExileController.Instance;
-        
         // Reveal custom role
-        if (controller && id is StringNames.ExileTextPN or StringNames.ExileTextSN or StringNames.ExileTextPP or StringNames.ExileTextSP)
+        if (ExileController.Instance is var controller && controller 
+            && id is StringNames.ExileTextPN or StringNames.ExileTextSN or StringNames.ExileTextPP 
+            or StringNames.ExileTextSP)
         {
             var role = controller.exiled?.Role.GetExtensionOrDefault();
             if (role is null) return true;

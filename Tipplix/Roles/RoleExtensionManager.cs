@@ -21,18 +21,21 @@ public static class RoleExtensionManager
 
     public static void LoadRoles()
     {
-        _allCustomRoles.ForEach(_ => _.Initialize());
-        RoleManager.Instance.AllRoles = RoleManager.Instance.AllRoles.Concat(_allCustomRoles.Select(_ => _.Behaviour)).ToArray();
+        _allCustomRoles.ForEach(x => x.Initialize());
+        RoleManager.Instance.AllRoles = RoleManager.Instance.AllRoles
+            .Concat(_allCustomRoles.Select(x => x.Behaviour))
+            .ToArray();
     }
 
     public static RoleExtension? GetOrDefault(RoleBehaviour roleBehaviour)
     {
-        return GetOrDefault(roleBehaviour.Role);
+        Reactor.Logger<TipplixPlugin>.Info("Is castable: " + roleBehaviour.TryCast<PlixRole>()?.RoleExtension?.GetType());
+        return roleBehaviour.TryCast<PlixRole>()?.RoleExtension ?? GetOrDefault(roleBehaviour.Role);
     }
         
     public static RoleExtension? GetOrDefault(RoleTypes roleType)
     {
-        return ExtensionAddresses.TryGetValue((ushort) roleType, out var val)? 
+        return ExtensionAddresses.TryGetValue((ushort) roleType, out var val) ? 
             val : _allCustomRoles.FirstOrDefault(x => x.RoleType == roleType);
     }
 }

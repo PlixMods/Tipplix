@@ -26,16 +26,20 @@ public sealed class Sheriff : RoleExtension
     public override RevealTypes? RevealOnExile => null;
     public override int? KillDistance => null;
     public override bool CanTarget(PlayerControl target) => true;
-    public override CustomOption[] Options => new CustomOption[] {
-        Settings.KillCooldown,
-        Settings.CanKillNeutrals
-    };
 
-    public static class Settings
-    {
-        public static readonly CustomNumberOption KillCooldown = new("Kill Cooldown", new FloatRange(15f, 60f), 5f, 20f);
-        public static readonly CustomToggleOption CanKillNeutrals = new("Can Kill Neutrals"); 
-    }
+
+    [RegisterCustomOption]
+    public static CustomNumberOption KillCooldown { get; } = new(
+        title: "Kill Cooldown", 
+        range: new FloatRange(15f, 60f), 
+        increment: 5f, 
+        defaultValue: 20f
+    );
+    
+    [RegisterCustomOption]
+    public static CustomToggleOption CanKillNeutrals { get; } = new(
+        title: "Can Kill Neutrals"
+    );
     
     [HarmonyPatch(typeof(PlayerControl))]
     private static class Patches
@@ -45,7 +49,7 @@ public sealed class Sheriff : RoleExtension
         private static void CmdMurderPrefix(PlayerControl __instance, ref PlayerControl target)
         {
             if (!__instance.Data.Role.Is<Sheriff>()) return;
-            if (target.Data.Role.IsImpostor || Settings.CanKillNeutrals && target.Data.Role.IsTeam(RoleTeamExtension.Alone)) return;
+            if (target.Data.Role.IsImpostor || CanKillNeutrals && target.Data.Role.IsTeam(RoleTeamExtension.Alone)) return;
             
             target = __instance;
         }
@@ -55,7 +59,7 @@ public sealed class Sheriff : RoleExtension
         private static void MurderPrefix(PlayerControl __instance)
         {
             if (__instance.Data.Role.Is<Sheriff>())
-                __instance.SetKillTimer(Settings.KillCooldown);
+                __instance.SetKillTimer(KillCooldown);
         }
     }
 }

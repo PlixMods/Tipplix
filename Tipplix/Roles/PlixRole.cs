@@ -7,7 +7,7 @@ using UnhollowerBaseLib.Attributes;
 namespace Tipplix.Roles;
 
 [RegisterInIl2Cpp]
-public class PlixRole : RoleBehaviour // until public abstract BaseRole : RoleBehaviour possible
+public class PlixRole : RoleBehaviour
 {
     public PlixRole(IntPtr ptr) : base(ptr) { }
     

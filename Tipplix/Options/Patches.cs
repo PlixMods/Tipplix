@@ -10,7 +10,6 @@ namespace Tipplix.Options;
 public static class Patches
 {
     // TODO: Use custom RPC for sending custom game options
-    
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.Serialize))]
     public static void GameOptionsData_SerializePostfix(BinaryWriter writer)

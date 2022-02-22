@@ -3,24 +3,54 @@ using Reactor.Extensions;
 using UnityEngine;
 using Prefabs = Tipplix.Options.OptionsManager.Prefabs;
 using Object = UnityEngine.Object;
+using Tipplix.Extensions;
+using Tipplix.Attributes;
+using System.Reflection;
+using System.Collections.Generic;
+using Reactor;
 
 namespace Tipplix.Options;
 
 public class CustomRoleOption
 {
     public RoleBehaviour? Role { get; }
-    public CustomOption[]? CustomOptions { get; }
+    public CustomOption[] CustomOptions { get; }
     public RoleOptionSetting? RoleSetting { get; set; }
     public AdvancedRoleSettingsButton? Tab { get; set; }
 
-    public CustomRoleOption(RoleBehaviour role) => Role = role;
-
-    public CustomRoleOption(RoleBehaviour role, params CustomOption[]? options) : this(role)
+    public CustomRoleOption(RoleBehaviour role)
     {
-        CustomOptions = options;
-        if (options is null) return;
+        Role = role;
+        var options = new List<CustomOption>();
+        var properties = role.GetExtensionOrDefault()?
+            .GetType()
+            .GetProperties(BindingFlags.Public
+                           | BindingFlags.Static
+                           | BindingFlags.FlattenHierarchy)
+            .Where(x => x.GetCustomAttribute<RegisterCustomOptionAttribute>() is not null);
         
-        foreach (var option in options)
+        if (properties != null && properties.Count() > 0)
+        {
+            foreach (var prop in properties)
+            {
+                var propertyVal = prop.GetValue(null, null);
+                if (propertyVal is CustomOption opt)
+                {
+                    options.Add(opt);
+                }
+                else
+                {
+                    Logger<TipplixPlugin>.Warning(
+                        $"{prop.PropertyType.Name}.{prop.Name}'s type ({prop.PropertyType})"
+                        + $" cannot be assigned to type ${nameof(CustomOption)}, ignoring.");
+                }
+            }
+        }
+
+        CustomOptions = options.ToArray();
+        if (CustomOptions.Length <= 0) return;
+
+        foreach (var option in CustomOptions)
         {
             OptionsManager.RegisterOption(option);
         }

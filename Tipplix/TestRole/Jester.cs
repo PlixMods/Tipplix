@@ -24,7 +24,7 @@ public sealed class Jester : RoleExtension
     public override bool CanUseKillButton => false;
     public override bool CanVent => false;
     public override bool CanSabotage => false;
-    public override bool AffectedByLightAffectors => !Settings.CanSeeInDark;
+    public override bool AffectedByLightAffectors => !CanSeeInDark;
     public override bool TasksCountTowardProgress => true;
     public override int MaxPlayer => 1;
     public override bool OptionVisible => true;
@@ -33,17 +33,14 @@ public sealed class Jester : RoleExtension
     public override bool CanTarget(PlayerControl target) => false;
     
     public override Sprite Sprite => _sprite != null ? _sprite : _sprite = SpriteHelper.FindOrNull("jester.png")!;
-    public override CustomOption[] Options => new CustomOption[] {
-        Settings.CanCallMeeting,
-        Settings.CanSeeInDark
-    };
 
     private Sprite _sprite = null!;
-    public static class Settings
-    {
-        public static readonly CustomToggleOption CanCallMeeting = new("Can Call Emergency Meeting");
-        public static readonly CustomToggleOption CanSeeInDark = new("Can See In The Dark");
-    }
+
+    [RegisterCustomOption]
+    public static CustomToggleOption CanCallMeeting { get; } = new("Can Call Emergency Meeting");
+
+    [RegisterCustomOption]
+    public static CustomToggleOption CanSeeInDark { get; } = new("Can See In The Dark");
     
     internal class EndGame : CustomGameOverReason
     {

@@ -32,7 +32,6 @@ public abstract class RoleExtension
 
     public abstract bool AffectedByLightAffectors { get; }
 
-    public virtual CustomOption[]? Options => null;
     public virtual Sprite? Sprite { get; } = null;
 
     public PlixRole? Behaviour { get; set; }
@@ -45,7 +44,7 @@ public abstract class RoleExtension
 
         if (OptionVisible)
         {
-            var roleOption = new CustomRoleOption(Behaviour, Options);
+            var roleOption = new CustomRoleOption(Behaviour);
             RoleOptions = OptionsManager.RegisterRoleOption(roleOption);
         }
     }
